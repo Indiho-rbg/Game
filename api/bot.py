@@ -24,11 +24,11 @@ async def start(update: Update, context: CallbackContext):
 application = Application.builder().token(TOKEN).build()
 
 # Обробка запиту від Telegram
-@app.post(f'/{TOKEN}')
+@app.post("/webhook")
 async def webhook(request: Request):
-    json_str = await request.json()  # Виправлено на json() замість декодування вручну
+    json_str = await request.json()
     update = Update.de_json(json_str, application.bot)
-    await application.process_update(update)  # Використовуємо process_update замість dispatcher.process_update
+    dispatcher.process_update(update)
     return JSONResponse({"status": "ok"})
 
 # Встановлення вебхука для бота
