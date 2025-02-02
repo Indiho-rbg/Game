@@ -8,6 +8,11 @@ import uvicorn
 # Ініціалізація FastAPI
 app = FastAPI()
 
+# Додаємо кореневий маршрут для перевірки роботи сервера
+@app.get("/")
+async def root():
+    return {"message": "Бот працює! Вебхук налаштовано."}
+    
 # Токен вашого бота (замініть на свій)
 TOKEN = '7592348192:AAGE24v6WWSKRSIclap7iUATad5kqdimYSU'
 
