@@ -9,7 +9,7 @@ def start(update: Update, context: CallbackContext) -> None:
 
 # Створення обробника команд
 def main():
-    updater = Updater("YOUR_TOKEN")
+    updater = Updater("7592348192:AAFyqIJnZTvjjzShu_az9emIKZKkkZFcQFk")
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler("start", start))
 
