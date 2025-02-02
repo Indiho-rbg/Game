@@ -14,7 +14,7 @@ def start(update, context):
 
 def main():
     # Вставте свій токен, який ви отримали від BotFather
-    updater = Updater("YOUR_BOT_TOKEN", use_context=True)
+    updater = Updater("7592348192:AAFyqIJnZTvjjzShu_az9emIKZKkkZFcQFk", use_context=True)
     dispatcher = updater.dispatcher
 
     # Додаємо обробник команд
