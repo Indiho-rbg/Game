@@ -1,26 +1,28 @@
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Updater, CommandHandler
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
+from telegram.ext import Updater, CommandHandler, CallbackContext
 
-# Функція, що запускає гру
-def start(update, context):
-    # Створюємо кнопку, яка відкриє Web App
+# Введи свій токен
+TOKEN = '7592348192:AAFyqIJnZTvjjzShu_az9emIKZKkkZFcQFk'
+
+def start(update: Update, context: CallbackContext):
+    # Визначаємо кнопку, яка відкриє веб-додаток
     keyboard = [
-        [InlineKeyboardButton("Почати гру", web_app="https://game-three-puce.vercel.app/")]
+        [
+            InlineKeyboardButton("Start Game", web_app=WebAppInfo(url="https://game-three-puce.vercel.app/"))
+        ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    
+
     # Відправляємо повідомлення з кнопкою
-    update.message.reply_text('Ласкаво просимо до гри!', reply_markup=reply_markup)
+    update.message.reply_text("Привіт! Натисни кнопку, щоб почати гру!", reply_markup=reply_markup)
 
 def main():
-    # Вставте свій токен, який ви отримали від BotFather
-    updater = Updater("7592348192:AAFyqIJnZTvjjzShu_az9emIKZKkkZFcQFk", use_context=True)
-    dispatcher = updater.dispatcher
+    updater = Updater(TOKEN, use_context=True)
+    dp = updater.dispatcher
 
-    # Додаємо обробник команд
-    dispatcher.add_handler(CommandHandler("start", start))
-    
-    # Запускаємо бота
+    # Додаємо команду /start
+    dp.add_handler(CommandHandler("start", start))
+
     updater.start_polling()
     updater.idle()
 
