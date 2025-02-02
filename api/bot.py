@@ -5,6 +5,12 @@ from flask import Flask, request
 
 app = Flask(__name__)
 
+@app.route('/api/bot', methods=['POST', 'GET'])
+def handle_request():
+    return "Bot is running!", 200
+
+handler = app  # ВАЖЛИВО для Vercel
+
 # Токен вашого бота
 TOKEN = '7592348192:AAGE24v6WWSKRSIclap7iUATad5kqdimYSU'
 
