@@ -2,7 +2,7 @@ from telegram import Update
 from telegram.ext import Updater, CommandHandler, CallbackContext
 
 # Ваш токен Telegram бота
-TOKEN = '7592348192:AAFyqIJnZTvjjzShu_az9emIKZKkkZFcQFk'
+TOKEN = '7592348192:AAGE24v6WWSKRSIclap7iUATad5kqdimYSU'
 
 # Функція, яка обробляє команду /start
 def start(update: Update, context: CallbackContext) -> None:
