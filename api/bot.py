@@ -9,8 +9,6 @@ app = Flask(__name__)
 def handle_request():
     return "Bot is running!", 200
 
-handler = app  # ВАЖЛИВО для Vercel
-
 # Токен вашого бота
 TOKEN = '7592348192:AAGE24v6WWSKRSIclap7iUATad5kqdimYSU'
 
@@ -35,3 +33,5 @@ if __name__ == '__main__':
     # Встановлюємо вебхук
     updater.bot.setWebhook(f'https://game-three-puce.vercel.app/{TOKEN}')
     app.run()
+
+    handler = app  # ВАЖЛИВО для Vercel
