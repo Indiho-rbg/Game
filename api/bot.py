@@ -1,35 +1,10 @@
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
-from telegram.ext import Updater, CommandHandler, CallbackContext
+from flask import Flask
 
-# Твій токен
-TOKEN = '7592348192:AAFyqIJnZTvjjzShu_az9emIKZKkkZFcQFk'
+app = Flask(__name__)
 
-def start(update: Update, context: CallbackContext):
-    # Створюємо кнопку з Web App
-    keyboard = [
-        [
-            InlineKeyboardButton("Start Game", web_app=WebAppInfo(url="https://game-three-puce.vercel.app/"))
-        ]
-    ]
-    
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    
-    # Відправляємо повідомлення з кнопкою
-    update.message.reply_text("Привіт! Натисни кнопку, щоб почати гру!", reply_markup=reply_markup)
+@app.route('/')
+def home():
+    return 'Hello, World!'
 
-def main():
-    # Створюємо апдейтера та диспетчера
-    updater = Updater(TOKEN, use_context=True)
-    dp = updater.dispatcher
-
-    # Обробляємо команду /start
-    dp.add_handler(CommandHandler("start", start))
-
-    # Починаємо опитування
-    updater.start_polling()
-
-    # Залишаємо бот активним
-    updater.idle()
-
-if __name__ == '__main__':
-    main()
+if __name__ == "__main__":
+    app.run()
