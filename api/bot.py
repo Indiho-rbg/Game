@@ -27,5 +27,5 @@ if __name__ == '__main__':
     dispatcher.add_handler(CommandHandler("start", start))
     
     # Встановлюємо вебхук
-    updater.bot.setWebhook(f'https://game-git-main-indihos-projects.vercel.app/{TOKEN}')
+    updater.bot.setWebhook(f'https://game-three-puce.vercel.app/{TOKEN}')
     app.run()
