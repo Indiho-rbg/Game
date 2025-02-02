@@ -8,7 +8,7 @@ def start(update: Update, context: CallbackContext):
     # Створюємо кнопку з Web App
     keyboard = [
         [
-            InlineKeyboardButton("Start Game", web_app=WebAppInfo(url="https://game-three-puce.vercel.app/"))
+            InlineKeyboardButton("Start Game", web_app=WebAppInfo(url="https://game-git-main-indihos-projects.vercel.app/"))
         ]
     ]
     
