@@ -1,39 +1,30 @@
-import logging
-import asyncio
-from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
-from telegram import Update
-from telegram.ext import Application, CommandHandler, CallbackContext
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import Updater, CommandHandler, CallbackContext
 
-# Логування
-logging.basicConfig(level=logging.INFO)
+# Функція для команди /start
+def start(update: Update, context: CallbackContext) -> None:
+    user_id = update.message.from_user.id
+    game_url = "https://game-three-puce.vercel.app"  # URL вашої гри
+    keyboard = [[InlineKeyboardButton("Play Farm Game", url=game_url)]]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    update.message.reply_text('Привіт! Натисніть на кнопку нижче, щоб грати:', reply_markup=reply_markup)
 
-app = FastAPI()
+# Основна функція для запуску бота
+def main() -> None:
+    # Введіть токен вашого бота тут
+    token = '7592348192:AAGE24v6WWSKRSIclap7iUATad5kqdimYSU'
+    
+    # Створення апдейтера і диспетчера
+    updater = Updater(token)
+    
+    dispatcher = updater.dispatcher
+    
+    # Додавання обробників команд
+    dispatcher.add_handler(CommandHandler("start", start))
+    
+    # Запуск бота
+    updater.start_polling()
+    updater.idle()
 
-# Токен бота
-TOKEN = "7592348192:AAGE24v6WWSKRSIclap7iUATad5kqdimYSU"
-
-# Функція для обробки команди /start
-async def start(update: Update, context: CallbackContext):
-    await update.message.reply_text("Привіт! Я бот!")
-
-# Ініціалізація бота
-application = Application.builder().token(TOKEN).build()
-application.add_handler(CommandHandler("start", start))
-
-# Webhook для отримання оновлень від Telegram
-@app.post("/webhook")
-async def webhook(request: Request):
-    data = await request.json()
-    update = Update.de_json(data, application.bot)
-    await application.process_update(update)
-    return JSONResponse(content={"status": "ok"})
-
-# Встановлення вебхука при старті
-@app.on_event("startup")
-async def on_startup():
-    await application.bot.set_webhook(url="https://game-three-puce.vercel.app/webhook")
-    asyncio.create_task(application.run_polling())
-
-# Обов'язково для Vercel
-handler = app
+if __name__ == '__main__':
+    main()
