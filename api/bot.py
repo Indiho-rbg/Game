@@ -1,30 +1,27 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Updater, CommandHandler, CallbackContext
+from telegram.ext import Application, CommandHandler, CallbackContext
+import os
 
 # Функція для команди /start
-def start(update: Update, context: CallbackContext) -> None:
-    user_id = update.message.from_user.id
-    game_url = "https://game-three-puce.vercel.app"  # URL вашої гри
-    keyboard = [[InlineKeyboardButton("Play Farm Game", url=game_url)]]
+async def start(update: Update, context: CallbackContext) -> None:
+    game_url = "https://game-three-puce.vercel.app/"  # Замініть на URL вашої гри
+    keyboard = [[InlineKeyboardButton("Play Simple Game", url=game_url)]]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    update.message.reply_text('Привіт! Натисніть на кнопку нижче, щоб грати:', reply_markup=reply_markup)
+    await update.message.reply_text('Привіт! Натисніть на кнопку нижче, щоб грати:', reply_markup=reply_markup)
 
 # Основна функція для запуску бота
-def main() -> None:
-    # Введіть токен вашого бота тут
-    token = '7592348192:AAGE24v6WWSKRSIclap7iUATad5kqdimYSU'
+async def main() -> None:
+    token = os.getenv('7592348192:AAGE24v6WWSKRSIclap7iUATad5kqdimYSU')  # Отримайте токен з середовища
     
-    # Створення апдейтера і диспетчера
-    updater = Updater(token)
-    
-    dispatcher = updater.dispatcher
+    # Створення аплікації
+    application = Application.builder().token(token).build()
     
     # Додавання обробників команд
-    dispatcher.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("start", start))
     
     # Запуск бота
-    updater.start_polling()
-    updater.idle()
+    await application.run_polling()
 
 if __name__ == '__main__':
-    main()
+    import asyncio
+    asyncio.run(main())
