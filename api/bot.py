@@ -1,38 +1,29 @@
-from telegram import Update
-from telegram.ext import Application, CommandHandler, CallbackContext
+import os
+import logging
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-import os
+from telegram import Update
+from telegram.ext import Application, CommandHandler
 
-# Токен вашого бота
-TOKEN = '7592348192:AAGE24v6WWSKRSIclap7iUATad5kqdimYSU'
+TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+WEBHOOK_URL = f"https://game-noab.onrender.com"
 
-# Функція для обробки команд
-async def start(update: Update, context: CallbackContext):
-    await update.message.reply_text("Привіт! Я бот!")
-
-# Створення та налаштування бота
-application = Application.builder().token(TOKEN).build()
-
-# Додавання обробника для команди "/start"
-application.add_handler(CommandHandler("start", start))
-
-# Створення FastAPI додатку
 app = FastAPI()
 
-# Обробка запиту від Telegram
-@app.post(f'/{TOKEN}')
-async def webhook(request: Request):
-    json_str = await request.json()  # Виправлено на json() замість декодування вручну
-    update = Update.de_json(json_str, application.bot)
-    await application.process_update(update)
-    return JSONResponse({"status": "ok"})
+async def start(update: Update, context):
+    await update.message.reply_text("Привіт! Я бот на Render!")
 
-# Встановлення вебхука для бота
+# Ініціалізація бота
+application = Application.builder().token(TOKEN).build()
+application.add_handler(CommandHandler("start", start))
+
 @app.on_event("startup")
-async def on_startup():
-    # Викликаємо асинхронний метод set_webhook з await
-    await application.bot.set_webhook(f'https://game-three-puce.vercel.app/{TOKEN}')
+async def set_webhook():
+    await application.bot.set_webhook(WEBHOOK_URL)
 
-# Експортуємо обробник для Vercel
-handler = app  # Цей рядок важливий для правильного обробника запитів у Vercel
+@app.post("/webhook")
+async def handle_webhook(request: Request):
+    data = await request.json()
+    update = Update.de_json(data, application.bot)
+    await application.update.update_queue.put(update)
+    return JSONResponse({"status": "ok"})
