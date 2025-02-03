@@ -1,9 +1,9 @@
 import logging
 import asyncio
-from telegram import Update
-from telegram.ext import Application, CommandHandler, CallbackContext
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
+from telegram import Update
+from telegram.ext import Application, CommandHandler, CallbackContext
 
 # Логування
 logging.basicConfig(level=logging.INFO)
@@ -21,12 +21,6 @@ async def start(update: Update, context: CallbackContext):
 application = Application.builder().token(TOKEN).build()
 application.add_handler(CommandHandler("start", start))
 
-# Запуск бота у фоновому режимі
-async def run_bot():
-    await application.initialize()
-    await application.start()
-    await application.updater.start_polling()
-
 # Webhook для отримання оновлень від Telegram
 @app.post("/webhook")
 async def webhook(request: Request):
@@ -39,7 +33,7 @@ async def webhook(request: Request):
 @app.on_event("startup")
 async def on_startup():
     await application.bot.set_webhook(url="https://game-three-puce.vercel.app/webhook")
-    asyncio.create_task(run_bot())
+    asyncio.create_task(application.run_polling())
 
 # Обов'язково для Vercel
 handler = app
