@@ -1,39 +1,42 @@
 import logging
+import asyncio
 from telegram import Update
 from telegram.ext import Application, CommandHandler, CallbackContext
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-# Налаштування логування
-logging.basicConfig(level=logging.INFO)
-
 app = FastAPI()
 
-# Токен вашого бота
-TOKEN = '7592348192:AAGE24v6WWSKRSIclap7iUATad5kqdimYSU'
+# Токен бота (замінити на власний)
+TOKEN = "7592348192:AAGE24v6WWSKRSIclap7iUATad5kqdimYSU"
 
-# Функція для обробки команд
+# Функція для обробки команди /start
 async def start(update: Update, context: CallbackContext):
-    logging.info(f"Received /start command from {update.message.chat_id}")
     await update.message.reply_text("Привіт! Я бот!")
 
-# Створення та налаштування бота
+# Ініціалізація бота
 application = Application.builder().token(TOKEN).build()
-dispatcher = application.dispatcher
-dispatcher.add_handler(CommandHandler("start", start))
+application.add_handler(CommandHandler("start", start))
 
-# Обробка запиту від Telegram
-@app.post(f'/{TOKEN}')
+# Запускаємо бота у фоновому режимі
+async def run_bot():
+    await application.initialize()
+    await application.start()
+    await application.updater.start_polling()
+
+# Webhook для отримання оновлень від Telegram
+@app.post("/webhook")
 async def webhook(request: Request):
-    json_str = await request.json()  # Виправлено на json() замість декодування вручну
-    update = Update.de_json(json_str, application.bot)
-    dispatcher.process_update(update)
-    return JSONResponse({"status": "ok"})
+    data = await request.json()
+    update = Update.de_json(data, application.bot)
+    await application.process_update(update)
+    return JSONResponse(content={"status": "ok"})
 
-# Встановлення вебхука для бота
-application.bot.set_webhook(f'https://game-three-puce.vercel.app/{TOKEN}')
+# Встановлюємо вебхук при старті
+@app.on_event("startup")
+async def on_startup():
+    await application.bot.set_webhook(url="https://game-three-puce.vercel.app/webhook")
+    asyncio.create_task(run_bot())
 
-# Запуск FastAPI сервера
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+# Обов'язково для Vercel
+handler = app
