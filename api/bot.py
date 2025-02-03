@@ -1,4 +1,4 @@
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import Update
 from telegram.ext import Application, CommandHandler, CallbackContext
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
@@ -13,21 +13,23 @@ async def start(update: Update, context: CallbackContext):
 
 # Створення та налаштування бота
 application = Application.builder().token(TOKEN).build()
-dispatcher = application.dispatcher
-dispatcher.add_handler(CommandHandler("start", start))
 
-# Обробка запиту від Telegram
+# Додавання обробника для команди "/start"
+application.add_handler(CommandHandler("start", start))
+
+# Створення FastAPI додатку
 app = FastAPI()
 
+# Обробка запиту від Telegram
 @app.post(f'/{TOKEN}')
 async def webhook(request: Request):
     json_str = await request.json()  # Виправлено на json() замість декодування вручну
     update = Update.de_json(json_str, application.bot)
-    dispatcher.process_update(update)
+    await application.process_update(update)
     return JSONResponse({"status": "ok"})
 
 # Встановлення вебхука для бота
 application.bot.set_webhook(f'https://game-three-puce.vercel.app/{TOKEN}')
 
-# Запуск сервера (лише для локального запуску, на Vercel не потрібен)
-handler = app  # Тут експортуємо обробник для Vercel
+# Експортуємо обробник для Vercel
+handler = app
