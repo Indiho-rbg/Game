@@ -5,9 +5,12 @@ from telegram.ext import Application, CommandHandler, CallbackContext
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
+# Логування
+logging.basicConfig(level=logging.INFO)
+
 app = FastAPI()
 
-# Токен бота (замінити на власний)
+# Токен бота
 TOKEN = "7592348192:AAGE24v6WWSKRSIclap7iUATad5kqdimYSU"
 
 # Функція для обробки команди /start
@@ -18,7 +21,7 @@ async def start(update: Update, context: CallbackContext):
 application = Application.builder().token(TOKEN).build()
 application.add_handler(CommandHandler("start", start))
 
-# Запускаємо бота у фоновому режимі
+# Запуск бота у фоновому режимі
 async def run_bot():
     await application.initialize()
     await application.start()
@@ -32,7 +35,7 @@ async def webhook(request: Request):
     await application.process_update(update)
     return JSONResponse(content={"status": "ok"})
 
-# Встановлюємо вебхук при старті
+# Встановлення вебхука при старті
 @app.on_event("startup")
 async def on_startup():
     await application.bot.set_webhook(url="https://game-three-puce.vercel.app/webhook")
