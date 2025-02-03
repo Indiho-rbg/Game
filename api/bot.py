@@ -35,4 +35,4 @@ async def on_startup():
     await application.bot.set_webhook(f'https://game-three-puce.vercel.app/{TOKEN}')
 
 # Експортуємо обробник для Vercel
-handler = app
+handler = app  # Цей рядок важливий для правильного обробника запитів у Vercel
