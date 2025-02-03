@@ -29,7 +29,10 @@ async def webhook(request: Request):
     return JSONResponse({"status": "ok"})
 
 # Встановлення вебхука для бота
-application.bot.set_webhook(f'https://game-three-puce.vercel.app/{TOKEN}')
+@app.on_event("startup")
+async def on_startup():
+    # Викликаємо асинхронний метод set_webhook з await
+    await application.bot.set_webhook(f'https://game-three-puce.vercel.app/{TOKEN}')
 
 # Експортуємо обробник для Vercel
 handler = app
