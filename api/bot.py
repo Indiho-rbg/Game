@@ -1,27 +1,33 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackContext
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 import os
 
-# Функція для команди /start
-async def start(update: Update, context: CallbackContext) -> None:
-    game_url = "https://game-three-puce.vercel.app/"  # Замініть на URL вашої гри
-    keyboard = [[InlineKeyboardButton("Play Simple Game", url=game_url)]]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    await update.message.reply_text('Привіт! Натисніть на кнопку нижче, щоб грати:', reply_markup=reply_markup)
+# Токен вашого бота
+TOKEN = '7592348192:AAGE24v6WWSKRSIclap7iUATad5kqdimYSU'
 
-# Основна функція для запуску бота
-async def main() -> None:
-    token = os.getenv('7592348192:AAGE24v6WWSKRSIclap7iUATad5kqdimYSU')  # Отримайте токен з середовища
-    
-    # Створення аплікації
-    application = Application.builder().token(token).build()
-    
-    # Додавання обробників команд
-    application.add_handler(CommandHandler("start", start))
-    
-    # Запуск бота
-    await application.run_polling()
+# Функція для обробки команд
+async def start(update: Update, context: CallbackContext):
+    await update.message.reply_text("Привіт! Я бот!")
 
-if __name__ == '__main__':
-    import asyncio
-    asyncio.run(main())
+# Створення та налаштування бота
+application = Application.builder().token(TOKEN).build()
+dispatcher = application.dispatcher
+dispatcher.add_handler(CommandHandler("start", start))
+
+# Обробка запиту від Telegram
+app = FastAPI()
+
+@app.post(f'/{TOKEN}')
+async def webhook(request: Request):
+    json_str = await request.json()  # Виправлено на json() замість декодування вручну
+    update = Update.de_json(json_str, application.bot)
+    dispatcher.process_update(update)
+    return JSONResponse({"status": "ok"})
+
+# Встановлення вебхука для бота
+application.bot.set_webhook(f'https://game-three-puce.vercel.app/{TOKEN}')
+
+# Запуск сервера (лише для локального запуску, на Vercel не потрібен)
+handler = app  # Тут експортуємо обробник для Vercel
