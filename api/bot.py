@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 from telegram import Update
 from telegram.ext import Application, CommandHandler
 
-TOKEN = os.getenv("7592348192:AAEiXybN3RgsRodZaBAz-ZWHIs3QgDqjwDM")
+TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 WEBHOOK_URL = f"https://game-noab.onrender.com"
 
 app = FastAPI()
