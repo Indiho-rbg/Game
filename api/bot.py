@@ -1,29 +1,38 @@
-import os
-import logging
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
-from telegram import Update
-from telegram.ext import Application, CommandHandler
+from telegram import Update, Bot
+from telegram.ext import Dispatcher, CommandHandler, CallbackContext
+import os
 
-TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-WEBHOOK_URL = f"https://game-noab.onrender.com"
-
+# 1. Створення об'єкта FastAPI
 app = FastAPI()
 
-async def start(update: Update, context):
-    await update.message.reply_text("Привіт! Я бот на Render!")
+# Токен вашого Telegram-бота
+TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 
-# Ініціалізація бота
-application = Application.builder().token(TOKEN).build()
-application.add_handler(CommandHandler("start", start))
+# Створення об'єкта Bot для доступу до Telegram API
+bot = Bot(token=TOKEN)
 
-@app.on_event("startup")
-async def set_webhook():
-    await application.bot.set_webhook(WEBHOOK_URL)
+# 2. Ініціалізація Dispatcher для обробки запитів
+dispatcher = Dispatcher(bot, None, workers=0)
 
+# Функція для обробки команди /start
+async def start(update: Update, context: CallbackContext):
+    await update.message.reply_text("Привіт! Я бот, який реагує на команду /start!")
+
+# Додавання обробника команди /start
+start_handler = CommandHandler("start", start)
+dispatcher.add_handler(start_handler)
+
+# 3. Обробка вебхука
 @app.post("/webhook")
-async def handle_webhook(request: Request):
-    data = await request.json()
-    update = Update.de_json(data, application.bot)
-    await application.update.update_queue.put(update)
-    return JSONResponse({"status": "ok"})
+async def webhook(request: Request):
+    json_str = await request.json()
+    update = Update.de_json(json_str, bot)
+    dispatcher.process_update(update)
+    return {"status": "ok"}
+
+# 4. Налаштування вебхука при запуску сервера
+@app.on_event("startup")
+async def on_startup():
+    webhook_url = "https://game-noab.onrender.com/webhook"  # Замініть на URL вашого сервера
+    bot.set_webhook(url=webhook_url)
